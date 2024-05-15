@@ -19,7 +19,7 @@ TGraph* CreateGraph(const char* filename, TGraph* graph) {
     graph = new TGraph(time.size(), &time[0], &voltage[0]);
     graph->SetMarkerStyle(20);
     graph->SetMarkerColor(kBlue);
-    graph->SetTitle("Voltage vs Time");
+    graph->SetTitle("V(t), freq. = 12 kHz");
     graph->GetXaxis()->SetTitle("Time");
     graph->GetYaxis()->SetTitle("Voltage");
 
@@ -37,12 +37,12 @@ void PlotData() {
     TGraph* graph4 = nullptr;
 
 try{
-    graph1=CreateGraph("f_resonance/V(t)_gen.txt", graph1); 
+    graph1=CreateGraph("f_12kHz/V(t)_gen.txt", graph1); 
 
   
-    graph2=CreateGraph("f_resonance/V(t)_R.txt", graph2);
-    graph3=CreateGraph("f_resonance/V(t)_L.txt", graph3);
-    graph4=CreateGraph("f_resonance/V(t)_C.txt", graph4);
+    graph2=CreateGraph("f_12kHz/V(t)_R.txt", graph2);
+    graph3=CreateGraph("f_12kHz/V(t)_L.txt", graph3);
+    graph4=CreateGraph("f_12kHz/V(t)_C.txt", graph4);
     }
     catch(const std::runtime_error& e){
     std::cerr << "Error: " << e.what() << std::endl;
@@ -50,31 +50,35 @@ try{
 }
 
 if (graph1) {
-    graph1->SetMarkerStyle(2);
+    graph1->SetMarkerStyle(7);
     graph1->SetMarkerColor(kBlack);
-    graph1->Draw("AP");
+    graph1->SetLineColor(kBlack);
+    graph1->Draw("APL");
 }
 
 if (graph2) {
-    graph2->SetMarkerStyle(2);
-    graph2->SetMarkerColor(kRed); 
-    graph2->Draw("same, P");  
+    graph2->SetMarkerStyle(7);
+    graph2->SetMarkerColor(kRed);
+    graph2->SetLineColor(kRed); 
+    graph2->Draw("same, PL");  
 }
 
 if (graph3) {
-    graph3->SetMarkerStyle(2);
+    graph3->SetMarkerStyle(7);
     graph3->SetMarkerColor(kGreen); 
-    graph3->Draw("same, P");
+    graph3->SetLineColor(kGreen);
+    graph3->Draw("same, PL");
 }
 
 if (graph4) {
-    graph4->SetMarkerStyle(2);
-    graph4->SetMarkerColor(kBlue);  
-    graph4->Draw("same, P");
+    graph4->SetMarkerStyle(7);
+    graph4->SetMarkerColor(kBlue);
+    graph4->SetLineColor(kBlue);  
+    graph4->Draw("same, PL");
 }
 
 TLegend *leg = new TLegend(0.7,0.7,0.9, 0.9); 
-leg->SetHeader("Legenda", "C"); 
+leg->SetHeader("Legenda", "C");
 leg->AddEntry(graph1, "V_gen", "p");
 leg->AddEntry(graph2, "V_R", "p");
 leg->AddEntry(graph3, "V_L", "p");
