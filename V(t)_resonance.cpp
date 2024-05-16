@@ -19,9 +19,9 @@ TGraph* CreateGraph(const char* filename, TGraph* graph) {
     graph = new TGraph(time.size(), &time[0], &voltage[0]);
     graph->SetMarkerStyle(20);
     graph->SetMarkerColor(kBlue);
-    graph->SetTitle("V(t), freq. = 12 kHz");
-    graph->GetXaxis()->SetTitle("Time");
-    graph->GetYaxis()->SetTitle("Voltage");
+    graph->SetTitle("V(t), freq. risonanza");
+    graph->GetXaxis()->SetTitle("Time (s)");
+    graph->GetYaxis()->SetTitle("Voltage (V)");
 
     return graph;
 
@@ -37,12 +37,10 @@ void PlotData() {
     TGraph* graph4 = nullptr;
 
 try{
-    graph1=CreateGraph("f_12kHz/V(t)_gen.txt", graph1); 
-
-  
-    graph2=CreateGraph("f_12kHz/V(t)_R.txt", graph2);
-    graph3=CreateGraph("f_12kHz/V(t)_L.txt", graph3);
-    graph4=CreateGraph("f_12kHz/V(t)_C.txt", graph4);
+    graph1=CreateGraph("f_resonance/V(t)_gen.txt", graph1); 
+    graph2=CreateGraph("f_resonance/V(t)_R.txt", graph2);
+    graph3=CreateGraph("f_resonance/V(t)_L.txt", graph3);
+    graph4=CreateGraph("f_resonance/V(t)_C.txt", graph4);
     }
     catch(const std::runtime_error& e){
     std::cerr << "Error: " << e.what() << std::endl;
