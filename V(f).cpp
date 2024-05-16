@@ -1,14 +1,8 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include "TFile.h"
-#include "TGraph.h"
-#include "TCanvas.h"
-#include "TAxis.h"
 
 void plotDataFromFiles() {
     // Creazione di un TCanvas per il plot
-    TCanvas *c1 = new TCanvas("c1", "Differenze di Potenziali", 800, 600);
+    TCanvas *c1 = new TCanvas("c1", "Voltage vs Frequence", 800, 600);
 
     // Creazione di un TGraph per ogni set di dati
     TGraph *graph[4];
@@ -35,7 +29,7 @@ void plotDataFromFiles() {
         graph[i]->SetTitle(("Set " + std::to_string(i + 1)).c_str());
         graph[i]->SetLineColor(i + 1);
         graph[i]->SetMarkerColor(i + 1);
-        graph[i]->SetMarkerStyle(20 + i);
+        graph[i]->SetMarkerStyle(7);
     }
 
     // Settaggio del range sull'asse x e y per adattarsi ai dati
@@ -55,21 +49,27 @@ void plotDataFromFiles() {
     for (int i = 0; i < 4; ++i) {
         mg->Add(graph[i]);
     }
-    mg->SetTitle("Differenze di Potenziali");
+    mg->SetTitle("V(f)");
 
     // Impostazione dei margini dell'asse x e y
     mg->GetXaxis()->SetLimits(minX, maxX);
     mg->GetYaxis()->SetLimits(minY, maxY);
 
+    // Definizione delle etichette degli assi
+    mg->GetXaxis()->SetTitle("Frequenza (Hz)");
+    mg->GetYaxis()->SetTitle("Voltage (V)");
+
     // Disegna il TMultiGraph sul canvas
     mg->Draw("APL");
 
     // Aggiungi una legenda
-    TLegend *legend = new TLegend(0.7, 0.7, 0.9, 0.9);
-    for (int i = 0; i < 4; ++i) {
-        legend->AddEntry(graph[i], ("Set " + std::to_string(i + 1)).c_str(), "l");
-    }
-    legend->Draw();
+    TLegend *leg = new TLegend(0.7,0.7,0.9, 0.9); 
+    leg->SetHeader("Legenda", "C");
+    leg->AddEntry(graph[0], "V_gen", "p");
+    leg->AddEntry(graph[1], "V_R", "p");
+    leg->AddEntry(graph[2], "V_L", "p");
+    leg->AddEntry(graph[3], "V_C", "p");
+    leg->Draw(); 
 
     // Mostra il canvas
     c1->Draw();
