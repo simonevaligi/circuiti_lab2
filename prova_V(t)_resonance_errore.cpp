@@ -4,10 +4,10 @@
 
 void plotGraph() {
     // Definizione dei percorsi dei file
-    const char* file1 = "f_12kHz (corretto)/V(t)_gen.txt";
-    const char* file2 = "f_12kHz (corretto)/V(t)_R.txt";
-    const char* file3 = "f_12kHz (corretto)/V(t)_L.txt";
-    const char* file4 = "f_12kHz (corretto)/V(t)_C.txt";
+    const char* file1 = "f_resonance (corretto)/V(t)_gen.txt";
+    const char* file2 = "f_resonance (corretto)/V(t)_R.txt";
+    const char* file3 = "f_resonance (corretto)/V(t)_L.txt";
+    const char* file4 = "f_resonance (corretto)/V(t)_C.txt";
 
     // Include delle librerie di ROOT
     #include "TCanvas.h"
@@ -54,7 +54,7 @@ void plotGraph() {
 
     // Aggiunta di un titolo al canvas
     TPaveText *title = new TPaveText(0.1, 0.95, 0.9, 0.98, "NDC");
-    title->AddText("V(t), 12kHz");
+    title->AddText("V(t), freq. risonanza");
     title->SetTextAlign(22);
     title->SetFillColor(0);
     title->SetBorderSize(0);
