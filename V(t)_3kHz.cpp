@@ -49,7 +49,7 @@ void plotGraph() {
     }
 
     // Creazione di un nuovo canvas
-    TCanvas *c1 = new TCanvas("c1","Graph with errors",200,10,700,500);
+    TCanvas *c1 = new TCanvas("c1","Graph with errors",200,10,700,700);
 
     // Rimozione del titolo standard del canvas
     c1->SetTitle("");
