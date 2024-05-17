@@ -1,96 +1,101 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 
-const double voltageError = 0.007019; // Definisci l'incertezza delle ddp
+void plotGraph() {
+    // Definizione dei percorsi dei file
+    const char* file1 = "f_resonance (corretto)/V(t)_gen.txt";
+    const char* file2 = "f_resonance (corretto)/V(t)_R.txt";
+    const char* file3 = "f_resonance (corretto)/V(t)_L.txt";
+    const char* file4 = "f_resonance (corretto)/V(t)_C.txt";
 
-TGraphErrors* CreateGraph(const char* filename, TGraphErrors* graph) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error: Could not open file " << filename << std::endl;
+    // Include delle librerie di ROOT
+    #include "TCanvas.h"
+    #include "TGraphErrors.h"
+    #include "TAxis.h"
 
-        throw std::runtime_error("Could not open file");
-    }
+    // Definizione del numero di punti dei grafici
+    const int numPoints = 125;
 
-    std::vector<double> time, voltage;
-    double t, v;
-    while (file >> t >> v) {
-        time.push_back(t);
-        voltage.push_back(v);
-    }
+    // Apertura dei file
+    std::ifstream inFile1(file1);
+    std::ifstream inFile2(file2);
+    std::ifstream inFile3(file3);
+    std::ifstream inFile4(file4);
 
-    TGraphErrors* graphErrors = new TGraphErrors(time.size(), &time[0], &voltage[0], nullptr, &voltageError);
-    graphErrors->SetMarkerStyle(20);
-    graphErrors->SetMarkerColor(kBlue);
-    graphErrors->SetTitle("V(t), freq. risonanza");
-    graphErrors->GetXaxis()->SetTitle("Time (s)");
-    graphErrors->GetYaxis()->SetTitle("Voltage (V)");
-
-    // Imposta le barre di errore uguali per tutti i punti
-    for (int i = 0; i < graphErrors->GetN(); ++i) {
-        graphErrors->SetPointError(i, 0, voltageError);
-    }
-
-    return graphErrors;
-}
-
-void PlotData() {
-    TCanvas* canvas = new TCanvas("canvas", "Graphs", 800, 600);
-    canvas->Divide(2, 2);
-
-    TGraphErrors* graph1 = nullptr;
-    TGraphErrors* graph2 = nullptr;
-    TGraphErrors* graph3 = nullptr;
-    TGraphErrors* graph4 = nullptr;
-
-    try {
-        graph1 = CreateGraph("f_resonance/V(t)_gen.txt", graph1);
-        graph2 = CreateGraph("f_resonance/V(t)_R.txt", graph2);
-        graph3 = CreateGraph("f_resonance/V(t)_L.txt", graph3);
-        graph4 = CreateGraph("f_resonance/V(t)_C.txt", graph4);
-    } catch (const std::runtime_error& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+    // Controllo se i file sono stati aperti correttamente
+    if (!inFile1.is_open() || !inFile2.is_open() || !inFile3.is_open() || !inFile4.is_open()) {
+        std::cerr << "Errore nell'apertura dei file." << std::endl;
         return;
     }
 
-    if (graph1) {
-        graph1->SetMarkerStyle(7);
-        graph1->SetMarkerColor(kBlack);
-        graph1->SetLineColor(kBlack);
-        graph1->Draw("APL");
+    // Definizione degli array per i dati
+    double time[numPoints];
+    double voltage1[numPoints];
+    double voltage2[numPoints];
+    double voltage3[numPoints];
+    double voltage4[numPoints];
+    double error[numPoints];
+
+    // Lettura dei dati dai file e conversione del tempo in millisecondi
+    for (int i = 0; i < numPoints; ++i) {
+        double rawTime;
+        inFile1 >> rawTime >> voltage1[i];
+        time[i] = rawTime * 1000.0; // Converti il tempo da secondi a millisecondi
+        inFile2 >> rawTime >> voltage2[i];
+        inFile3 >> rawTime >> voltage3[i];
+        inFile4 >> rawTime >> voltage4[i];
+        error[i] = 0.007019; // Definizione dell'errore per ogni punto
     }
 
-    if (graph2) {
-        graph2->SetMarkerStyle(7);
-        graph2->SetMarkerColor(kRed);
-        graph2->SetLineColor(kRed); 
-        graph2->Draw("same, PL");  
-    }
+    // Creazione di un nuovo canvas
+    TCanvas *c1 = new TCanvas("c1","Graph with errors",200,10,700,500);
 
-    if (graph3) {
-        graph3->SetMarkerStyle(7);
-        graph3->SetMarkerColor(kGreen); 
-        graph3->SetLineColor(kGreen);
-        graph3->Draw("same, PL");
-    }
+    // Rimozione del titolo standard del canvas
+    c1->SetTitle("");
 
-    if (graph4) {
-        graph4->SetMarkerStyle(7);
-        graph4->SetMarkerColor(kBlue);
-        graph4->SetLineColor(kBlue);  
-        graph4->Draw("same, PL");
-    }
+    // Creazione del grafico con barre di errore
+    TGraphErrors *gr1 = new TGraphErrors(numPoints, time, voltage1, 0, error);
+    TGraphErrors *gr2 = new TGraphErrors(numPoints, time, voltage2, 0, error);
+    TGraphErrors *gr3 = new TGraphErrors(numPoints, time, voltage3, 0, error);
+    TGraphErrors *gr4 = new TGraphErrors(numPoints, time, voltage4, 0, error);
 
-    TLegend* leg = new TLegend(0.7, 0.7, 0.9, 0.9); 
-    leg->SetHeader("Legenda", "C");
-    leg->AddEntry(graph1, "V_gen", "p");
-    leg->AddEntry(graph2, "V_R", "p");
-    leg->AddEntry(graph3, "V_L", "p");
-    leg->AddEntry(graph4, "V_C", "p");
-    leg->Draw(); 
+    // Impostazione dei titoli degli assi
+    gr1->GetXaxis()->SetTitle("Tempo (ms)");
+    gr1->GetYaxis()->SetTitle("Tensione (V)");
 
-    canvas->Update();
-    canvas->Draw();
-}
+    // Impostazione dei colori e dello stile dei grafici
+    gr1->SetLineColor(kBlack);
+    gr1->SetMarkerColor(kBlack);
+    gr1->SetMarkerStyle(1);
 
-void VoltageGraphs() {
-    PlotData();
+    gr2->SetLineColor(kRed);
+    gr2->SetMarkerColor(kRed);
+    gr2->SetMarkerStyle(1);
+
+    gr3->SetLineColor(kGreen);
+    gr3->SetMarkerColor(kGreen);
+    gr3->SetMarkerStyle(1);
+
+    gr4->SetLineColor(kBlue);
+    gr4->SetMarkerColor(kBlue);
+    gr4->SetMarkerStyle(1);
+
+    // Disegno dei grafici sul canvas
+    gr1->Draw("APL");
+    gr2->Draw("PL SAME");
+    gr3->Draw("PL SAME");
+    gr4->Draw("PL SAME");
+
+    // Creazione della legenda
+    TLegend *legend = new TLegend(0.7,0.7,0.9,0.9);
+    legend->SetHeader("Legenda", "C");
+    legend->AddEntry(gr1,"V(t)_gen","lep");
+    legend->AddEntry(gr2,"V(t)_R","lep");
+    legend->AddEntry(gr3,"V(t)_L","lep");
+    legend->AddEntry(gr4,"V(t)_C","lep");
+    legend->Draw();
+
+    // Mostra il canvas
+    c1->Draw();
 }

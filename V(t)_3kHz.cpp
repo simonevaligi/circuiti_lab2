@@ -15,7 +15,7 @@ void plotGraph() {
     #include "TAxis.h"
 
     // Definizione del numero di punti dei grafici
-    const int numPoints = 125;
+    const int numPoints = 300;
 
     // Apertura dei file
     std::ifstream inFile1(file1);
@@ -37,12 +37,14 @@ void plotGraph() {
     double voltage4[numPoints];
     double error[numPoints];
 
-    // Lettura dei dati dai file
+    // Lettura dei dati dai file e conversione del tempo in millisecondi
     for (int i = 0; i < numPoints; ++i) {
-        inFile1 >> time[i] >> voltage1[i];
-        inFile2 >> time[i] >> voltage2[i];
-        inFile3 >> time[i] >> voltage3[i];
-        inFile4 >> time[i] >> voltage4[i];
+        double rawTime;
+        inFile1 >> rawTime >> voltage1[i];
+        time[i] = rawTime * 1000.0; // Converti il tempo da secondi a millisecondi
+        inFile2 >> rawTime >> voltage2[i];
+        inFile3 >> rawTime >> voltage3[i];
+        inFile4 >> rawTime >> voltage4[i];
         error[i] = 0.007019; // Definizione dell'errore per ogni punto
     }
 
@@ -52,15 +54,6 @@ void plotGraph() {
     // Rimozione del titolo standard del canvas
     c1->SetTitle("");
 
-    // Aggiunta di un titolo al canvas
-    TPaveText *title = new TPaveText(0.1, 0.95, 0.9, 0.98, "NDC");
-    title->AddText("V(t), 3kHz");
-    title->SetTextAlign(22);
-    title->SetFillColor(0);
-    title->SetBorderSize(0);
-    title->Draw();
-
-
     // Creazione del grafico con barre di errore
     TGraphErrors *gr1 = new TGraphErrors(numPoints, time, voltage1, 0, error);
     TGraphErrors *gr2 = new TGraphErrors(numPoints, time, voltage2, 0, error);
@@ -68,7 +61,7 @@ void plotGraph() {
     TGraphErrors *gr4 = new TGraphErrors(numPoints, time, voltage4, 0, error);
 
     // Impostazione dei titoli degli assi
-    gr1->GetXaxis()->SetTitle("Tempo (s)");
+    gr1->GetXaxis()->SetTitle("Tempo (ms)");
     gr1->GetYaxis()->SetTitle("Tensione (V)");
 
     // Impostazione dei colori e dello stile dei grafici
